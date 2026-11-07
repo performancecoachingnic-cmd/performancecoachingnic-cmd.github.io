@@ -388,10 +388,16 @@ html[data-theme="dark"] .ev .dot{background:#3a3220!important}
 html[data-theme="dark"] .ev.now .dot{background:#f0d072!important;box-shadow:0 0 12px rgba(240,200,90,.9)}
 html[data-theme="dark"] .ok{color:#f0d072!important}
 /* Startseite: Metall-Blöcke */
-html .mb{--face:#26282e;--tx:#f1eee6;--mut:#a9a59b;--line:rgba(255,255,255,.14);position:relative;margin:18px 0;padding:8px 10px 10px;border-radius:11px;border:.5px solid transparent;background:linear-gradient(var(--face),var(--face)) padding-box,var(--mc) border-box;box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 13px 26px rgba(25,32,48,.3);color:#f1eee6}
+.mb>summary{list-style:none;cursor:pointer}.mb>summary::-webkit-details-marker{display:none}
+.mbh .chv{font-style:normal;color:var(--ml);font-size:18px;line-height:1;margin-left:6px;transition:transform .15s}
+.mb[open]>summary .chv{transform:rotate(90deg)}
+html .mb .card,html .mb .nums>div{padding:8px 10px!important}
+html .mb .nums{gap:6px!important;margin:0!important}
+html .mb .ev{padding:6px 0!important}
+html .mb{--face:#26282e;--tx:#f1eee6;--mut:#a9a59b;--line:rgba(255,255,255,.14);position:relative;margin:9px 0;padding:6px 8px 8px;border-radius:11px;border:.5px solid transparent;background:linear-gradient(var(--face),var(--face)) padding-box,var(--mc) border-box;box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 13px 26px rgba(25,32,48,.3);color:#f1eee6}
 html[data-theme="dark"] .mb{--face:#16171c;box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 13px 26px rgba(0,0,0,.6)}
-.mbh{display:flex;align-items:center;gap:8px;padding:2px 2px 9px}
-.mbh i{width:26px;height:26px;border-radius:5px;background:var(--mg);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 1px 3px rgba(0,0,0,.3);flex:none}
+.mbh{display:flex;align-items:center;gap:8px;padding:2px 2px 2px}
+.mb[open]>.mbh{padding-bottom:7px}
 .mbh b{font-size:12px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--ml)}
 .mbh span{margin-left:auto;font-size:13px;color:#a9a59b}
 html .mb .card,html .mb .nums>div,html .mb .nx,html .mb .sug,html .mb details.card{background:rgba(255,255,255,.05)!important;border:1px solid rgba(255,255,255,.1)!important;box-shadow:none!important;color:#f1eee6!important}
@@ -416,7 +422,7 @@ html .mb .bar i,html .mb .bar span{background:var(--mg)!important}
 <div id="modal" onclick="if(event.target===this)closeModal()"><div class="box" id="mbox"></div></div>
 <nav id="nav"></nav>
 <script>
-const BUILD='20261107231739';
+const BUILD='20261107232221';
 
 // Die Seite selbst scrollt nicht mehr (Leiste bleibt dadurch fest unten), nur der Hauptbereich
 window.scrollTo=function(x,y){const m=document.getElementById('app');if(!m)return;if(x&&typeof x==='object'){y=x.top||0}m.scrollTop=y||0};
@@ -935,7 +941,8 @@ function metalVars(k){
   const con=`conic-gradient(from 155deg,${dk},${hi},${md},${lt},${dk},${md},${dk})`;
   return `--mg:${grad};--mc:${con};--md:${md};--ml:${lt}`;
 }
-const sec=(k,title,right,body)=>body?`<section class="mb" style="${metalVars(k)}"><div class="mbh"><i></i><b>${title}</b>${right?`<span>${right}</span>`:''}</div>${body}</section>`:'';
+const sec=(k,title,right,body,open)=>{if(!body)return '';const id='mb_'+k+(k==='sp'?'_'+today():'');
+  return `<details class="mb" style="${metalVars(k)}" ${foldState(id,open!==false)?'open':''} ontoggle="foldToggle('${id}',this.open)"><summary class="mbh"><b>${title}</b>${right?`<span>${right}</span>`:''}<em class="chv">›</em></summary>${body}</details>`};
 // ---------- Startseite: Essen heute (gegessen, offen, Summe, Anpassungen) ----------
 function foodOverview(){
   const T=targets(),gs=mealGroups(),rm=milkRow(),Z={k:0,p:0,c:0,f:0};
@@ -1049,7 +1056,8 @@ function vHeute(){
     :`<div class="card mut">${skipped?'Training fällt heute aus.':'Ruhetag. Erholung ist Training.'}</div>`;
   const medRows=T0.items.filter(i=>i.med),medNote=T0.tomorrow.replace(/<h2>(.*?)<\/h2>/g,'<div class="mut" style="margin:12px 0 4px;font-weight:700">$1</div>');
   const spBody=(medRows.length?`<div class="card" style="padding:6px 14px">${medRows.map(T0.row).join('')}</div>`:'<div class="card mut">Heute nichts fällig.</div>')+medNote+T0.deferred;
-  const kbBody=`${needW?weighCard():''}${needM?`<div class="card"><div class="mut" style="margin-bottom:6px">Schlaf und Schritte</div>${noH2(metricsCard()).replace('<div class="card">','<div>')}</div>`:''}${!needW?fold('koerper','Gewicht',fmt(bw.kg)+' kg',weighCard()):''}${!needM?fold('schlaf','Schlaf & Schritte',dm.steps?Math.round(dm.steps)+' Schritte':'',noH2(metricsCard())):''}`;
+  const kbBody=needW?weighCard():`<div class="card"><div class="row sp"><span class="mut">Gewicht heute</span><b>${fmt(bw.kg)} kg</b><button class="s" onclick="weighModal()">Ändern</button></div></div>`;
+  const nowT=new Date().toTimeString().slice(0,5),spDue=medRows.some(i=>!i.done&&i.t<=nowT);
   const waBody=`<div class="nums" style="grid-template-columns:1fr"><div><b>${fmt(w/1000,1)} L</b><small>von ${fmt(goal/1000,0)} L Wasser</small>${bar(w,goal)}</div></div>${noH2(waterCard())}`;
   const list=`<h2>Tagesablauf</h2><div class="card" style="padding:6px 14px">${T0.items.filter(i=>!i.med).map(T0.row).join('')}</div>${T0.times}`;
   $('#app').innerHTML=`<h1>${new Date().toLocaleDateString('de-DE',{weekday:'long'})}</h1>
@@ -1057,9 +1065,9 @@ function vHeute(){
   ${wkBanner()}${T0.big}
   ${sec('tr','Training',day?'Tag '+day.day_no:'',trItem)}
   ${sec('es','Essen',Math.round(E.k).toLocaleString('de-DE')+' kcal',nums+coffeeCard())}
-  ${sec('kb','Körper',bw?fmt(bw.kg)+' kg':'',kbBody)}
-  ${sec('sp','Spritzen',medRows.length?medRows.filter(i=>i.done).length+'/'+medRows.length:'',spBody)}
   ${sec('wa','Wasser',fmt(w/1000,1)+' L',waBody)}
+  ${sec('kb','Körper',bw?fmt(bw.kg)+' kg':'',kbBody)}
+  ${sec('sp','Spritzen',medRows.length?medRows.filter(i=>i.done).length+'/'+medRows.length:'',spBody,spDue)}
   ${list}`;
 }
 function vMehr(){
