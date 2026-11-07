@@ -387,6 +387,22 @@ html[data-theme="dark"] .set .in.done{background:linear-gradient(180deg,#2a2412,
 html[data-theme="dark"] .ev .dot{background:#3a3220!important}
 html[data-theme="dark"] .ev.now .dot{background:#f0d072!important;box-shadow:0 0 12px rgba(240,200,90,.9)}
 html[data-theme="dark"] .ok{color:#f0d072!important}
+/* Startseite: Metall-Blöcke */
+html .mb{--face:#26282e;--tx:#f1eee6;--mut:#a9a59b;--line:rgba(255,255,255,.14);position:relative;margin:18px 0;padding:8px 10px 10px;border-radius:11px;border:.5px solid transparent;background:linear-gradient(var(--face),var(--face)) padding-box,var(--mc) border-box;box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 13px 26px rgba(25,32,48,.3);color:#f1eee6}
+html[data-theme="dark"] .mb{--face:#16171c;box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 13px 26px rgba(0,0,0,.6)}
+.mbh{display:flex;align-items:center;gap:8px;padding:2px 2px 9px}
+.mbh i{width:26px;height:26px;border-radius:5px;background:var(--mg);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 1px 3px rgba(0,0,0,.3);flex:none}
+.mbh b{font-size:12px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--ml)}
+.mbh span{margin-left:auto;font-size:13px;color:#a9a59b}
+html .mb .card,html .mb .nums>div,html .mb .nx,html .mb .sug,html .mb details.card{background:rgba(255,255,255,.05)!important;border:1px solid rgba(255,255,255,.1)!important;box-shadow:none!important;color:#f1eee6!important}
+html .mb .card+.card,html .mb .nums+.card,html .mb .card+details{margin-top:8px}
+html .mb .mut,html .mb small,html .mb .mt,html .mb .nxs{color:#a9a59b!important}
+html .mb b,html .mb summary,html .mb .tm{color:#f1eee6}
+html .mb .nums b{background:linear-gradient(180deg,#fff,var(--ml))!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important}
+html .mb button:not(.chk):not(.in),html[data-theme="dark"] .mb button:not(.chk):not(.in),html[data-theme="dark"] .mb.mb button:not(.chk):not(.in):not(.z1):not(.z2){background:transparent!important;border:1.5px solid var(--ml)!important;color:var(--ml)!important;box-shadow:none!important;text-shadow:none!important}
+html .mb .ok,html .mb .trc{color:var(--ml)!important}
+html .mb .bar{background:rgba(255,255,255,.14)!important}
+html .mb .bar i,html .mb .bar span{background:var(--mg)!important}
 </style>
 </head>
 <body class="spl">
@@ -400,7 +416,7 @@ html[data-theme="dark"] .ok{color:#f0d072!important}
 <div id="modal" onclick="if(event.target===this)closeModal()"><div class="box" id="mbox"></div></div>
 <nav id="nav"></nav>
 <script>
-const BUILD='20261107193856';
+const BUILD='20261107231739';
 
 // Die Seite selbst scrollt nicht mehr (Leiste bleibt dadurch fest unten), nur der Hauptbereich
 window.scrollTo=function(x,y){const m=document.getElementById('app');if(!m)return;if(x&&typeof x==='object'){y=x.top||0}m.scrollTop=y||0};
@@ -875,14 +891,14 @@ function timelineItems(){
   due.filter(m=>m.kind==='injektion').forEach(m=>{
     const l=log.find(x=>x.med_id===m.id);
     const cr=carryRow(),carried=cr&&cr.data&&(cr.data.med_ids||[]).includes(m.id);
-    items.push({t:hmx(medT(m)),done:!!l,title:'💉 '+m.name+' '+(m.dose||''),sub:[carried?'einmalig von Tag '+cr.data.from_day:deferRows().some(r=>r.data.med_id===m.id&&r.data.to===T)?'verschoben':medDays(m),m.site||'',l&&l.side?l.side:''].filter(Boolean).join(' · ')||'Injektion',
+    items.push({med:1,t:hmx(medT(m)),done:!!l,title:'💉 '+m.name+' '+(m.dose||''),sub:[carried?'einmalig von Tag '+cr.data.from_day:deferRows().some(r=>r.data.med_id===m.id&&r.data.to===T)?'verschoben':medDays(m),m.site||'',l&&l.side?l.side:''].filter(Boolean).join(' · ')||'Injektion',
       btn:l?`<button class="g s" onclick="undoMed(${l.id})">✓ erledigt</button>`:`<button class="s" onclick="takeMed(${m.id})">Genommen</button><button class="g s" style="margin-left:6px" onclick="deferModal(${m.id})">Verschieben</button>`,
       extra:!l&&isQuad(m)&&quadSoon()?'<div class="warn" style="margin-top:6px">⚠ Quad gesperrt (Quad-Training in Kürze), andere Stelle wählen</div>':''});
   });
   const groups={};due.filter(m=>m.kind!=='injektion').forEach(m=>{(groups[hmx(medT(m))]??=[]).push(m)});
   Object.entries(groups).forEach(([tm,list])=>{
     const open=list.filter(m=>!isDone(m)),ids=open.map(m=>m.id);
-    items.push({t:tm,done:!open.length,title:'💊 Tabletten ('+list.length+')',sub:open.length?open.length+' offen':'alle genommen',
+    items.push({med:1,t:tm,done:!open.length,title:'💊 Tabletten ('+list.length+')',sub:open.length?open.length+' offen':'alle genommen',
       btn:open.length?`<button class="s" onclick="takeGroup([${ids.join(',')}])">Alle genommen</button>`:'',
       extra:`<details style="margin-top:6px"><summary>Einzeln ansehen</summary>${list.map(m=>{const l=log.find(x=>x.med_id===m.id);return `<div class="row sp" style="margin-top:6px"><span>${esc(m.name)} <span class="mut">${esc(m.dose||'')}</span></span>${l?`<button class="g s" onclick="undoMed(${l.id})">✓</button>`:`<button class="s" onclick="takeMed(${m.id})">Genommen</button>`}</div>`}).join('')}</details>`});
   });
@@ -906,8 +922,20 @@ function timelineHtml(){
   const row=i=>{const isNow=nx&&i===nx;return `<div class="ev${i.done?' done':isNow?' now':''}"><span class="tm">${tmv(i)}</span><span class="dot"></span><div style="flex:1;min-width:0"><div class="row sp"><b>${iconFor(i.title)}${noEmoji(i.title)}</b>${i.rec?`<button class="g s" style="flex:none" onclick="showRecipe('${i.rec}')">Rezept</button>`:''}</div><div class="mt">${i.sub}</div>${i.done||isNow?'':(i.btn?`<div style="margin-top:6px">${i.btn}</div>`:'')}</div>${i.done?'<span class="trc">✓</span>':''}</div>`};
   const tm=addDays(today(),1),tmInj=S.meds.filter(m=>m.kind==='injektion'&&medDueOn(m,tm)),pdT=planDayOn(tm);
   const tomorrow=tmInj.length?`<h2>Morgen${pdT?' · Tag '+pdT:''}</h2><div class="card" style="padding:6px 14px">${tmInj.map(m=>`<div class="mrow" style="cursor:default"><div class="mn"><b>${esc(m.name)}</b><span>${esc(m.dose||'')}</span></div><div class="ms">${[medT(m),m.site||''].filter(Boolean).map(esc).join(' · ')}</div></div>`).join('')}</div>`:'';
-  return `${big}<h2>Tagesablauf</h2><div class="card" style="padding:6px 14px">${items.map(row).join('')}</div>${tomorrow}${tomorrowTimes()}${deferredCard()}`;
+  TLP={big,items,row,tomorrow,times:tomorrowTimes(),deferred:deferredCard()};
+  return `${big}<h2>Tagesablauf</h2><div class="card" style="padding:6px 14px">${items.map(row).join('')}</div>${tomorrow}${TLP.times}${TLP.deferred}`;
 }
+let TLP=null;
+// ---------- Startseite: Metall-Blöcke (Symbol-Kopf, dunkle Fläche, gebürstet) ----------
+const MET={tr:[44,72,50],es:[270,46,46],kb:[180,55,42],sp:[360,100,24],wa:[210,42,46]};
+function metalVars(k){
+  const [h,s,l]=MET[k],g=.63,c=v=>Math.max(0,Math.min(100,v)),H=(a,b)=>`hsl(${h},${Math.round(c(a))}%,${Math.round(c(b))}%)`;
+  const dk=H(s,Math.max(7,l*(.66-.3*g))),md=H(s,l),lt=H(s*(1-.5*g),Math.min(95,l+16+36*g)),hi=H(s*.3,Math.min(99,l+30+60*g)),m2=H(s,l*.92);
+  const grad=`repeating-linear-gradient(90deg,rgba(255,255,255,.10) 0 1px,rgba(0,0,0,.05) 1px 3px),linear-gradient(155deg,${dk} 0%,${md} 30%,${lt} 50%,${m2} 72%,${dk} 100%)`;
+  const con=`conic-gradient(from 155deg,${dk},${hi},${md},${lt},${dk},${md},${dk})`;
+  return `--mg:${grad};--mc:${con};--md:${md};--ml:${lt}`;
+}
+const sec=(k,title,right,body)=>body?`<section class="mb" style="${metalVars(k)}"><div class="mbh"><i></i><b>${title}</b>${right?`<span>${right}</span>`:''}</div>${body}</section>`:'';
 // ---------- Startseite: Essen heute (gegessen, offen, Summe, Anpassungen) ----------
 function foodOverview(){
   const T=targets(),gs=mealGroups(),rm=milkRow(),Z={k:0,p:0,c:0,f:0};
@@ -1014,15 +1042,25 @@ function vHeute(){
   const nums=`<div class="nums">
     <div><b>${Math.round(E.k).toLocaleString('de-DE')}</b><small>${T.kcal?'von '+T.kcal.toLocaleString('de-DE')+' kcal':'kcal'}${diff>0?' · +'+diff:''}</small>${bar(E.k,T.kcal)}</div>
     <div><b>${Math.round(E.p)} g</b><small>von ${T.p} g Protein</small>${bar(E.p,T.p)}</div>
-    <div><b>${fmt(w/1000,1)} L</b><small>von ${fmt(goal/1000,0)} L Wasser</small>${bar(w,goal)}</div></div>`;
+    <div><b>${Math.round(E.f)} g</b><small>von ${T.f} g Fett</small>${bar(E.f,T.f)}</div></div>`;
+  const tl=timelineHtml(),T0=TLP,bw=S.bw.find(b=>b.day===today());
+  const trItem=(pd!=null&&day&&!day.is_rest)?(()=>{const se=S.sessions.find(x=>x.day===today()),n=se?(se.sets||[]).length:0,fin=se&&se.finished_at;
+    return `<div class="card"><div class="row sp"><div><b>${esc(day.name)}</b><div class="mut">${fin?'Erledigt · '+n+' Sätze':n?n+' Sätze eingetragen':'Noch nicht gestartet'}</div></div><button class="s" onclick="tab='training';render();scrollTo(0,0)">${fin?'Ansehen':n?'Weiter':'Starten'}</button></div></div>`})()
+    :`<div class="card mut">${skipped?'Training fällt heute aus.':'Ruhetag. Erholung ist Training.'}</div>`;
+  const medRows=T0.items.filter(i=>i.med),medNote=T0.tomorrow.replace(/<h2>(.*?)<\/h2>/g,'<div class="mut" style="margin:12px 0 4px;font-weight:700">$1</div>');
+  const spBody=(medRows.length?`<div class="card" style="padding:6px 14px">${medRows.map(T0.row).join('')}</div>`:'<div class="card mut">Heute nichts fällig.</div>')+medNote+T0.deferred;
+  const kbBody=`${needW?weighCard():''}${needM?`<div class="card"><div class="mut" style="margin-bottom:6px">Schlaf und Schritte</div>${noH2(metricsCard()).replace('<div class="card">','<div>')}</div>`:''}${!needW?fold('koerper','Gewicht',fmt(bw.kg)+' kg',weighCard()):''}${!needM?fold('schlaf','Schlaf & Schritte',dm.steps?Math.round(dm.steps)+' Schritte':'',noH2(metricsCard())):''}`;
+  const waBody=`<div class="nums" style="grid-template-columns:1fr"><div><b>${fmt(w/1000,1)} L</b><small>von ${fmt(goal/1000,0)} L Wasser</small>${bar(w,goal)}</div></div>${noH2(waterCard())}`;
+  const list=`<h2>Tagesablauf</h2><div class="card" style="padding:6px 14px">${T0.items.filter(i=>!i.med).map(T0.row).join('')}</div>${T0.times}`;
   $('#app').innerHTML=`<h1>${new Date().toLocaleDateString('de-DE',{weekday:'long'})}</h1>
   <div class="mut" style="margin-bottom:12px">${new Date().toLocaleDateString('de-DE',{day:'numeric',month:'long'})}${day?' · Tag '+day.day_no+': '+esc(day.name):(skipped?' · Training fällt aus':'')}${jumpedToday()?' · übersprungen':''}</div>
-  ${wkBanner()}${needW?weighCard():''}${timelineHtml().split('<h2>Tagesablauf</h2>')[0]}${nums}${coffeeCard()}
-  ${needM?`<div class="card"><div class="mut" style="margin-bottom:6px">Schlaf und Schritte</div>${noH2(metricsCard()).replace('<div class="card">','<div>')}</div>`:''}
-  ${fold('wasser','Wasser & Getränke',fmt(w/1000,1)+' L',noH2(waterCard()))}
-  <h2>Tagesablauf</h2>${timelineHtml().split('<h2>Tagesablauf</h2>')[1]}
-  ${!needW?fold('koerper','Gewicht',fmt(S.bw.find(b=>b.day===today()).kg)+' kg',weighCard()):''}
-  ${!needM?fold('schlaf','Schlaf & Schritte',dm.steps?Math.round(dm.steps)+' Schritte':'',noH2(metricsCard())):''}`;
+  ${wkBanner()}${T0.big}
+  ${sec('tr','Training',day?'Tag '+day.day_no:'',trItem)}
+  ${sec('es','Essen',Math.round(E.k).toLocaleString('de-DE')+' kcal',nums+coffeeCard())}
+  ${sec('kb','Körper',bw?fmt(bw.kg)+' kg':'',kbBody)}
+  ${sec('sp','Spritzen',medRows.length?medRows.filter(i=>i.done).length+'/'+medRows.length:'',spBody)}
+  ${sec('wa','Wasser',fmt(w/1000,1)+' L',waBody)}
+  ${list}`;
 }
 function vMehr(){
   const item=(title,desc,act)=>`<div class="card menu" onclick="${act}"><div><b>${title}</b><div class="mut">${desc}</div></div><span class="ch">›</span></div>`;
