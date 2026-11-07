@@ -422,7 +422,7 @@ html .mb .bar i,html .mb .bar span{background:var(--mg)!important}
 <div id="modal" onclick="if(event.target===this)closeModal()"><div class="box" id="mbox"></div></div>
 <nav id="nav"></nav>
 <script>
-const BUILD='20261107232221';
+const BUILD='20261107232559';
 
 // Die Seite selbst scrollt nicht mehr (Leiste bleibt dadurch fest unten), nur der Hauptbereich
 window.scrollTo=function(x,y){const m=document.getElementById('app');if(!m)return;if(x&&typeof x==='object'){y=x.top||0}m.scrollTop=y||0};
@@ -923,7 +923,7 @@ function noEmoji(t){return String(t||'').replace(/^[\u{1F300}-\u{1FAFF}\u2600-\u
 function timelineHtml(){
   const now=new Date().toTimeString().slice(0,5),items=timelineItems(),tmv=i=>i.t==='99:99'?'–':i.t;
   const open=items.filter(i=>!i.done),nx=open[0];
-  const big=nx?`<div class="nx"><div class="row sp"><div class="nxl">${nx.t<=now?'Jetzt':'Als Nächstes'} · ${tmv(nx)}</div>${nx.rec?`<button class="g s" onclick="showRecipe('${nx.rec}')">Rezept</button>`:''}</div><div class="nxt">${noEmoji(nx.title)}</div><div class="nxs">${nx.sub}</div><div class="row" style="margin-top:12px;gap:8px">${nx.btn||''}</div>${nx.extra?`<details class="nxd"><summary>Mehr</summary>${nx.extra}</details>`:''}</div>`
+  const big=nx?`<div class="nx"><div class="row sp"><div class="nxl">${nx.t<=now?'Jetzt':'Als Nächstes'} · ${tmv(nx)}</div>${nx.rec?`<button class="g s" onclick="showRecipe('${nx.rec}')">Rezept</button>`:''}</div><div class="nxt">${noEmoji(nx.title)}</div><div class="nxs">${nx.sub}</div><div class="row" style="margin-top:12px;gap:8px">${nx.btn||''}</div></div>`
     :`<div class="nx"><div class="nxl">Fertig</div><div class="nxt">Für heute steht nichts mehr an.</div></div>`;
   const row=i=>{const isNow=nx&&i===nx;return `<div class="ev${i.done?' done':isNow?' now':''}"><span class="tm">${tmv(i)}</span><span class="dot"></span><div style="flex:1;min-width:0"><div class="row sp"><b>${iconFor(i.title)}${noEmoji(i.title)}</b>${i.rec?`<button class="g s" style="flex:none" onclick="showRecipe('${i.rec}')">Rezept</button>`:''}</div><div class="mt">${i.sub}</div>${i.done||isNow?'':(i.btn?`<div style="margin-top:6px">${i.btn}</div>`:'')}</div>${i.done?'<span class="trc">✓</span>':''}</div>`};
   const tm=addDays(today(),1),tmInj=S.meds.filter(m=>m.kind==='injektion'&&medDueOn(m,tm)),pdT=planDayOn(tm);
@@ -941,7 +941,7 @@ function metalVars(k){
   const con=`conic-gradient(from 155deg,${dk},${hi},${md},${lt},${dk},${md},${dk})`;
   return `--mg:${grad};--mc:${con};--md:${md};--ml:${lt}`;
 }
-const sec=(k,title,right,body,open)=>{if(!body)return '';const id='mb_'+k+(k==='sp'?'_'+today():'');
+const sec=(k,title,right,body,open)=>{if(!body)return '';const id='mb2_'+k;
   return `<details class="mb" style="${metalVars(k)}" ${foldState(id,open!==false)?'open':''} ontoggle="foldToggle('${id}',this.open)"><summary class="mbh"><b>${title}</b>${right?`<span>${right}</span>`:''}<em class="chv">›</em></summary>${body}</details>`};
 // ---------- Startseite: Essen heute (gegessen, offen, Summe, Anpassungen) ----------
 function foodOverview(){
@@ -1063,11 +1063,11 @@ function vHeute(){
   $('#app').innerHTML=`<h1>${new Date().toLocaleDateString('de-DE',{weekday:'long'})}</h1>
   <div class="mut" style="margin-bottom:12px">${new Date().toLocaleDateString('de-DE',{day:'numeric',month:'long'})}${day?' · Tag '+day.day_no+': '+esc(day.name):(skipped?' · Training fällt aus':'')}${jumpedToday()?' · übersprungen':''}</div>
   ${wkBanner()}${T0.big}
-  ${sec('tr','Training',day?'Tag '+day.day_no:'',trItem)}
-  ${sec('es','Essen',Math.round(E.k).toLocaleString('de-DE')+' kcal',nums+coffeeCard())}
   ${sec('wa','Wasser',fmt(w/1000,1)+' L',waBody)}
-  ${sec('kb','Körper',bw?fmt(bw.kg)+' kg':'',kbBody)}
-  ${sec('sp','Spritzen',medRows.length?medRows.filter(i=>i.done).length+'/'+medRows.length:'',spBody,spDue)}
+  ${sec('es','Essen',Math.round(E.k).toLocaleString('de-DE')+' kcal',nums+coffeeCard())}
+  ${sec('tr','Training',day?'Tag '+day.day_no:'',trItem,false)}
+  ${sec('kb','Körper',bw?fmt(bw.kg)+' kg':'',kbBody,false)}
+  ${sec('sp','Spritzen',medRows.length?medRows.filter(i=>i.done).length+'/'+medRows.length:'',spBody,false)}
   ${list}`;
 }
 function vMehr(){
