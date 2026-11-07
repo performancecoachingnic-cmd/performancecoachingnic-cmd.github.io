@@ -422,7 +422,7 @@ html .mb .bar i,html .mb .bar span{background:var(--mg)!important}
 <div id="modal" onclick="if(event.target===this)closeModal()"><div class="box" id="mbox"></div></div>
 <nav id="nav"></nav>
 <script>
-const BUILD='20261107233216';
+const BUILD='20261107233747';
 
 // Die Seite selbst scrollt nicht mehr (Leiste bleibt dadurch fest unten), nur der Hauptbereich
 window.scrollTo=function(x,y){const m=document.getElementById('app');if(!m)return;if(x&&typeof x==='object'){y=x.top||0}m.scrollTop=y||0};
@@ -866,7 +866,7 @@ function mealMac(no,items){
   const rep=replacedOf(+no);
   return rep?{k:rep.kcal,p:rep.p,c:rep.c,f:rep.f}:items.reduce((a,m)=>{const f=m.foods||{},x=adjGrams(m)/(f.per_g||100);return{k:a.k+f.kcal*x,p:a.p+f.protein*x,c:a.c+f.carbs*x,f:a.f+f.fat*x}},{k:0,p:0,c:0,f:0});
 }
-function focusWeigh(){const el=document.getElementById('bwv');if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.focus()}}
+function focusWeigh(){const el=document.getElementById('bwv');if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.focus()}else weighModal()}
 function milkAsk(){
   const plan=planMilkMl();
   openModal(`<h1>Proteinmilch</h1><div class="mut">Hast du heute ${plan} ml getrunken?</div><br>
@@ -1060,15 +1060,13 @@ function vHeute(){
   const nowT=new Date().toTimeString().slice(0,5),spDue=medRows.some(i=>!i.done&&i.t<=nowT);
   const waBody=noH2(waterCard());
   const list=`<h2>Tagesablauf</h2><div class="card" style="padding:6px 14px">${T0.items.map(T0.row).join('')}</div>${T0.times}`;
-  $('#app').innerHTML=`<h1>${new Date().toLocaleDateString('de-DE',{weekday:'long'})}</h1>
-  <div class="mut" style="margin-bottom:12px">${new Date().toLocaleDateString('de-DE',{day:'numeric',month:'long'})}${day?' · Tag '+day.day_no+': '+esc(day.name):(skipped?' · Training fällt aus':'')}${jumpedToday()?' · übersprungen':''}</div>
+  const wc=`<div onclick="weighModal()" style="text-align:right;cursor:pointer;flex:none"><div class="mut" style="font-size:11px;letter-spacing:.08em">GEWICHT</div>${bw?`<b style="font-size:20px">${fmt(bw.kg)} kg</b>`:'<b style="font-size:15px">Wiegen</b>'}</div>`;
+  const list2=`<h2>Tagesablauf</h2><div class="card" style="padding:6px 14px">${T0.items.map(T0.row).join('')}</div>${T0.deferred}`;
+  $('#app').innerHTML=`<div class="row sp" style="align-items:flex-start;margin-bottom:12px"><div style="min-width:0"><h1 style="margin-bottom:2px">${new Date().toLocaleDateString('de-DE',{weekday:'long'})}</h1>
+  <div class="mut">${new Date().toLocaleDateString('de-DE',{day:'numeric',month:'long'})}${day?' · Tag '+day.day_no+': '+esc(day.name):(skipped?' · Training fällt aus':'')}${jumpedToday()?' · übersprungen':''}</div></div>${wc}</div>
   ${wkBanner()}${T0.big}
   ${sec('wa','Wasser',fmt(w/1000,1)+' L',waBody)}
-  ${sec('es','Essen',Math.round(E.k).toLocaleString('de-DE')+' kcal',nums+coffeeCard())}
-  ${sec('tr','Training',day?'Tag '+day.day_no:'',trItem,false)}
-  ${sec('kb','Körper',bw?fmt(bw.kg)+' kg':'',kbBody,false)}
-  ${sec('sp','Spritzen',medRows.length?medRows.filter(i=>i.done).length+'/'+medRows.length:'',spBody,false)}
-  ${list}`;
+  ${list2}`;
 }
 function vMehr(){
   const item=(title,desc,act)=>`<div class="card menu" onclick="${act}"><div><b>${title}</b><div class="mut">${desc}</div></div><span class="ch">›</span></div>`;
