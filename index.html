@@ -422,7 +422,7 @@ html .mb .bar i,html .mb .bar span{background:var(--mg)!important}
 <div id="modal" onclick="if(event.target===this)closeModal()"><div class="box" id="mbox"></div></div>
 <nav id="nav"></nav>
 <script>
-const BUILD='20261107232559';
+const BUILD='20261107232907';
 
 // Die Seite selbst scrollt nicht mehr (Leiste bleibt dadurch fest unten), nur der Hauptbereich
 window.scrollTo=function(x,y){const m=document.getElementById('app');if(!m)return;if(x&&typeof x==='object'){y=x.top||0}m.scrollTop=y||0};
@@ -1059,7 +1059,7 @@ function vHeute(){
   const kbBody=needW?weighCard():`<div class="card"><div class="row sp"><span class="mut">Gewicht heute</span><b>${fmt(bw.kg)} kg</b><button class="s" onclick="weighModal()">Ändern</button></div></div>`;
   const nowT=new Date().toTimeString().slice(0,5),spDue=medRows.some(i=>!i.done&&i.t<=nowT);
   const waBody=`<div class="nums" style="grid-template-columns:1fr"><div><b>${fmt(w/1000,1)} L</b><small>von ${fmt(goal/1000,0)} L Wasser</small>${bar(w,goal)}</div></div>${noH2(waterCard())}`;
-  const list=`<h2>Tagesablauf</h2><div class="card" style="padding:6px 14px">${T0.items.filter(i=>!i.med).map(T0.row).join('')}</div>${T0.times}`;
+  const list=`<h2>Tagesablauf</h2><div class="card" style="padding:6px 14px">${T0.items.map(T0.row).join('')}</div>${T0.times}`;
   $('#app').innerHTML=`<h1>${new Date().toLocaleDateString('de-DE',{weekday:'long'})}</h1>
   <div class="mut" style="margin-bottom:12px">${new Date().toLocaleDateString('de-DE',{day:'numeric',month:'long'})}${day?' · Tag '+day.day_no+': '+esc(day.name):(skipped?' · Training fällt aus':'')}${jumpedToday()?' · übersprungen':''}</div>
   ${wkBanner()}${T0.big}
