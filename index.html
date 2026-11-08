@@ -422,7 +422,7 @@ html .mb .bar i,html .mb .bar span{background:var(--mg)!important}
 <div id="modal" onclick="if(event.target===this)closeModal()"><div class="box" id="mbox"></div></div>
 <nav id="nav"></nav>
 <script>
-const BUILD='20261107233747';
+const BUILD='20261108122143';
 
 // Die Seite selbst scrollt nicht mehr (Leiste bleibt dadurch fest unten), nur der Hauptbereich
 window.scrollTo=function(x,y){const m=document.getElementById('app');if(!m)return;if(x&&typeof x==='object'){y=x.top||0}m.scrollTop=y||0};
@@ -4130,7 +4130,10 @@ function pdSrc(k,p){
     if(/tomatensauce/i.test(p.n))return 'Topf Tomatensauce';
     if(/gemüsemix|asia/i.test(p.n))return 'Gefrierfach (TK)';
     if(/salatmix/i.test(p.n))return 'Beutel';
-    if(/quark/i.test(p.n))return 'Quark-Packung';
+    if(/dressing|caesar/i.test(p.n))return 'Schüssel Caesar-Soße';
+    if(/quark|tzatziki/i.test(p.n))return 'Schüssel Tzatziki';
+    if(/mozzarella/i.test(p.n))return 'Mozzarella-Packung';
+    if(/wrap/i.test(p.n)&&!p.ref)return 'Wrap-Packung';
     if(k==='box'||k==='dosen'||k==='wrap')return '';
   }
   if(p.ref==='hae')return {curry:'Hähnchen-Dose „Curry“',wrap:'Hähnchen-Dose „Curry“',pasta:'Hähnchen-Dose „Pasta“',rh:'Hähnchen-Dose „Pfanne“'}[k]||'';
