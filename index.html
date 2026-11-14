@@ -422,7 +422,7 @@ html .mb .bar i,html .mb .bar span{background:var(--mg)!important}
 <div id="modal" onclick="if(event.target===this)closeModal()"><div class="box" id="mbox"></div></div>
 <nav id="nav"></nav>
 <script>
-const BUILD='20261114115014';
+const BUILD='20261114121815';
 
 // Die Seite selbst scrollt nicht mehr (Leiste bleibt dadurch fest unten), nur der Hauptbereich
 window.scrollTo=function(x,y){const m=document.getElementById('app');if(!m)return;if(x&&typeof x==='object'){y=x.top||0}m.scrollTop=y||0};
@@ -4130,6 +4130,7 @@ function pdSrc(k,p){
   if(['kart','rice','hae','schw','nudel','hack','pasta','box','dosen','wrap'].includes(k)){
     const M={hae:'Hähnchen-Schüssel',schw:'Schwein-Schüssel',nudel:'Nudel-Box',kart:'Kartoffel-Schüssel',rice:'Reis-Box',hack:'Hack-Schüssel',gesch:'Geschnetzeltes-Schüssel',gem:'Gemüse-Schüssel',spin:'Spinat-Schüssel'};
     if(p.ref&&M[p.ref]&&(k==='box'||k==='dosen'||k==='wrap'))return M[p.ref];
+    if(/curry-tomatensauce/i.test(p.n))return 'Topf Curry-Tomatensauce';
     if(/tomatensauce/i.test(p.n))return 'Topf Tomatensauce';
     if(/gemüsemix|asia/i.test(p.n))return 'Gefrierfach (TK)';
     if(/salatmix/i.test(p.n))return 'Beutel';
