@@ -422,7 +422,7 @@ html .mb .bar i,html .mb .bar span{background:var(--mg)!important}
 <div id="modal" onclick="if(event.target===this)closeModal()"><div class="box" id="mbox"></div></div>
 <nav id="nav"></nav>
 <script>
-const BUILD='20261114113140';
+const BUILD='20261114115014';
 
 // Die Seite selbst scrollt nicht mehr (Leiste bleibt dadurch fest unten), nur der Hauptbereich
 window.scrollTo=function(x,y){const m=document.getElementById('app');if(!m)return;if(x&&typeof x==='object'){y=x.top||0}m.scrollTop=y||0};
@@ -4090,7 +4090,7 @@ function wkTimer(i,min){
 function wtResume(){try{const m=JSON.parse(SS.get('wt_ends')||'{}');Object.entries(m).forEach(([i,end])=>{if(end>Date.now()&&!WT[i])wtRun(i,end)});wtSave()}catch(e){}}
 // ---- Prep pro Gericht: Gericht antippen, kochen, bestätigen ----
 let PDI=null;
-const PD_DEF={kart:.72,hae:.69,rice:2.5,nudel:2.3,schw:.72,rind:.75,hack:.86};
+const PD_DEF={kart:.72,hae:.69,rice:2.5,nudel:2.3,schw:.72,rind:.75,hack:.86,gesch:.75,gem:.85,spin:.6};
 const PD_ST={fridge:'🧊 In den Kühlschrank',freezer:'❄ Ins Gefrierfach',big:'📦 Große Box, in den Kühlschrank'};
 const pdDishes=w=>Array.isArray(w.plan.prep_dishes)?w.plan.prep_dishes:[];
 function pdFac(w,ref){
@@ -4128,7 +4128,7 @@ const PD_DAYS=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','
 const PD_SRC={rice:'Reis-Box',nudel:'Nudel-Box',kart:'Kartoffel-Schüssel',rind:'Schüssel Geschnetzeltes'};
 function pdSrc(k,p){
   if(['kart','rice','hae','schw','nudel','hack','pasta','box','dosen','wrap'].includes(k)){
-    const M={hae:'Hähnchen-Schüssel',schw:'Schwein-Schüssel',nudel:'Nudel-Box',kart:'Kartoffel-Schüssel',rice:'Reis-Box',hack:'Hack-Schüssel'};
+    const M={hae:'Hähnchen-Schüssel',schw:'Schwein-Schüssel',nudel:'Nudel-Box',kart:'Kartoffel-Schüssel',rice:'Reis-Box',hack:'Hack-Schüssel',gesch:'Geschnetzeltes-Schüssel',gem:'Gemüse-Schüssel',spin:'Spinat-Schüssel'};
     if(p.ref&&M[p.ref]&&(k==='box'||k==='dosen'||k==='wrap'))return M[p.ref];
     if(/tomatensauce/i.test(p.n))return 'Topf Tomatensauce';
     if(/gemüsemix|asia/i.test(p.n))return 'Gefrierfach (TK)';
@@ -4136,6 +4136,7 @@ function pdSrc(k,p){
     if(/dressing|caesar/i.test(p.n))return 'Schüssel Caesar-Soße';
     if(/quark|tzatziki/i.test(p.n))return 'Schüssel Tzatziki';
     if(/mozzarella/i.test(p.n))return 'Mozzarella-Packung';
+    if(/ketchup/i.test(p.n))return 'Ketchup-Flasche';
     if(/wrap/i.test(p.n)&&!p.ref)return 'Wrap-Packung';
     if(k==='box'||k==='dosen'||k==='wrap')return '';
   }
