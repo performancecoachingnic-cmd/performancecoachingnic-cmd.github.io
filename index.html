@@ -422,7 +422,7 @@ html .mb .bar i,html .mb .bar span{background:var(--mg)!important}
 <div id="modal" onclick="if(event.target===this)closeModal()"><div class="box" id="mbox"></div></div>
 <nav id="nav"></nav>
 <script>
-const BUILD='20261108122143';
+const BUILD='20261114113140';
 
 // Die Seite selbst scrollt nicht mehr (Leiste bleibt dadurch fest unten), nur der Hauptbereich
 window.scrollTo=function(x,y){const m=document.getElementById('app');if(!m)return;if(x&&typeof x==='object'){y=x.top||0}m.scrollTop=y||0};
@@ -1215,6 +1215,9 @@ function exCard(e,sess,d){
   const lastTxt=last?last.map(x=>wt(x.weight_kg)+'×'+x.reps).join(' · '):'noch keine Einheit an diesem Tag'+(oth?`<br><span style="opacity:.7">Hinweis ${esc(oth.day)}: ${oth.sets.map(x=>wt(x.weight_kg)+'×'+x.reps).join(' · ')} (kein Ziel)</span>`:'');
   let tgTxt='';
   const t0=setTarget(e,last,rows.length);if(t0)tgTxt=`${wt(t0.w)} × ${t0.r}`;
+  // Progressive Overload: alle Ziele des Tages zeigen, bei erreichter Obergrenze klar "Gewicht erhöhen" sagen
+  const tgs=last?Array.from({length:Math.max(total,1)},(_,k)=>setTarget(e,last,k)):[],isUp=t=>t&&/erhöhen/.test(t.why||'');
+  const poHtml=tgs.some(t=>t)?`${tgs.some(isUp)?`<div style="margin-top:6px;padding:6px 10px;border-radius:8px;background:rgba(240,180,40,.18);font-weight:800">⬆ Obergrenze erreicht: heute Gewicht erhöhen</div>`:''}<div class="mut" style="margin-top:4px">Ziele: ${tgs.map((t,k)=>t?(k+1)+') '+wt(t.w)+' × '+t.r+(isUp(t)?' ⬆':''):'').filter(Boolean).join(' · ')}</div>`:'';
   let sets='';
   for(let k=0;k<total;k++){
     const r=rows[k];
@@ -1226,7 +1229,7 @@ function exCard(e,sess,d){
   const doneN=rows.length;
   return `<details class="card fold" ${isOpen?'open':''} ontoggle="trToggle(${e.id},this.open)"><summary><span class="exh"><b>${esc(e.name)}</b></span><span class="fs">${doneN}/${Math.max(planned,doneN)} · ${planned} × ${e.rep_min}${e.rep_max!==e.rep_min?'–'+e.rep_max:''}</span></summary><div class="fb">
     ${e.blk?`<div class="mut" style="color:var(--ac2);font-weight:600;margin-bottom:4px">${esc(e.blk[0].why)}</div>`:(e.rep_note?`<div class="mut" style="margin-bottom:4px">${esc(e.rep_note)}</div>`:'')}
-    <div class="mut">Letztes Mal: ${lastTxt}${tgTxt?'<br>'+(e.fs_max?'Full Stack erreicht, keine Steigerung: <b>':'Ziel heute: <b>')+tgTxt+'</b>':''}</div>
+    <div class="mut">Letztes Mal: ${lastTxt}${tgTxt?'<br>'+(e.fs_max?'Full Stack erreicht, keine Steigerung: <b>':'Ziel heute: <b>')+tgTxt+'</b>':''}</div>${poHtml}
     <div class="mut" style="display:grid;grid-template-columns:26px 1fr 1fr 46px;gap:8px;margin-top:8px;font-size:11px"><span></span><span style="text-align:center">kg (0 = FS)</span><span style="text-align:center">Wdh.</span><span></span></div>
     ${sets}
     <div class="row wrap" style="margin-top:10px"><button class="g s" onclick="skipSet(${e.id})">Satz überspringen</button><button class="g s" onclick="trExtra[${e.id}]=(trExtra[${e.id}]||0)+1;trOpen=trOpen||new Set();trOpen.add(${e.id});render()">+ Zusatzsatz</button><button class="g s${e.fs_max?' on':''}" onclick="trMax(${e.id})">${e.fs_max?'✓ Full Stack':'Full Stack'}</button></div>
